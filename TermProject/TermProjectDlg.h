@@ -20,9 +20,14 @@ struct SCharInfo {
 class CTypeDB {
 public:
 	std::vector<SCharInfo> m_Chars; // 모든 데이터를 담는 배열
+	int m_nSheet = 3;
 
 	// CSV 파일 읽는 함수
 	BOOL ReadCSVFile(CString strPath) {
+		CWaitCursor wait;
+
+		m_Chars.clear();
+
 		CStdioFile file;
 		// 한글 포함 파일일 수 있으니 텍스트 모드로 열기
 		if (!file.Open(strPath, CFile::modeRead | CFile::typeText))
@@ -88,10 +93,40 @@ public:
 public:
 	vtkSmartPointer<vtkRenderWindow> m_vtkWindow;
 	vtkSmartPointer<vtkRenderWindowInteractor> m_pInteractor;
+	vtkSmartPointer<vtkRenderWindow> m_vtkRenderWindow;
+    vtkSmartPointer<vtkRenderer>     m_vtkRenderer;
+    vtkSmartPointer<vtkRenderWindowInteractor> m_vtkInteractor;
+	CTypeDB m_TypeDB;
+	CListCtrl m_ListCtrl;
+	CComboBox m_editBookName;
+	CImageList m_ImgList;
+
 	void InitVtkWindow(void* hWnd);
 	void ResizeVtkWindow();
-	CTypeDB m_TypeDB;
 	void ViewSTL(CString strFilePath);
 	afx_msg void OnNMClickListChars(NMHDR* pNMHDR, LRESULT* pResult);
-	CListCtrl m_ListCtrl;
+	afx_msg void OnClickedButtonButtonOpen();
+
+protected:
+	CString m_strRootPath;
+	int m_nCurrentSheet;
+	CImage m_imgBookPage;
+	CRect m_rectBookImage;
+
+	void LoadBookData(CString strBookName);
+	void LoadSheetImage(int nSheet);
+public:
+	int m_nSelectIndex = -1;
+	CImage m_imgTypeChar;
+	CImage m_imgSelectedChar;
+
+	void UpdateCharInfo(int nIndex);
+	afx_msg void OnDeltaposSpinType(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnSelchangeEditBookname();
+	afx_msg void OnNMCustomdrawListChars(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnDeltaposSpinSheet(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnStnClickedStaticFrame();
+	afx_msg void OnStnClickedStaticSheets();
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

@@ -213,6 +213,7 @@
     <None Include="res\TermProject.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\icon1.ico" />
     <Image Include="res\TermProject.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
