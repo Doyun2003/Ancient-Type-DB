@@ -6,127 +6,158 @@
 #include <vector>
 
 struct SCharInfo {
-	CString m_char;
-	int m_type;
-	int m_sheet;
-	int m_sx;
-	int m_sy;
-	int m_line;
-	int m_order;
-	int m_width;
-	int m_height;
+    CString m_char;
+    int m_type;
+    int m_sheet;
+    int m_sx;
+    int m_sy;
+    int m_line;
+    int m_order;
+    int m_width;
+    int m_height;  
 };
+
 
 class CTypeDB {
 public:
-	std::vector<SCharInfo> m_Chars; // 모든 데이터를 담는 배열
-	int m_nSheet = 3;
+    std::vector<SCharInfo> m_Chars; // 모든 데이터를 담는 배열
+    int m_nSheet = 3;
 
-	// CSV 파일 읽는 함수
-	BOOL ReadCSVFile(CString strPath) {
-		CWaitCursor wait;
+    BOOL ReadCSVFile(CString strPath) {
+        CWaitCursor wait;
 
-		m_Chars.clear();
+        m_Chars.clear();
 
-		CStdioFile file;
-		// 한글 포함 파일일 수 있으니 텍스트 모드로 열기
-		if (!file.Open(strPath, CFile::modeRead | CFile::typeText))
-			return FALSE;
+        CStdioFile file;
+        if (!file.Open(strPath, CFile::modeRead | CFile::typeText))
+            return FALSE;
 
-		CString strLine;
-		file.ReadString(strLine); // 첫 줄(헤더)은 건너뜀 [cite: 114]
+        CString strLine;
+        file.ReadString(strLine); 
 
-		while (file.ReadString(strLine)) { // 두 번째 줄부터 끝까지
-			SCharInfo info;
-			CString strToken;
+        while (file.ReadString(strLine)) {
+            SCharInfo info;
+            CString strToken;
 
-			// 쉼표(,)로 쪼개서 구조체에 넣기
-			AfxExtractSubString(info.m_char, strLine, 0, ',');
+            AfxExtractSubString(info.m_char, strLine, 0, ',');
 
-			AfxExtractSubString(strToken, strLine, 1, ','); info.m_type = _ttoi(strToken);
-			AfxExtractSubString(strToken, strLine, 2, ','); info.m_sheet = _ttoi(strToken);
-			AfxExtractSubString(strToken, strLine, 3, ','); info.m_sx = _ttoi(strToken);
-			AfxExtractSubString(strToken, strLine, 4, ','); info.m_sy = _ttoi(strToken);
-			AfxExtractSubString(strToken, strLine, 5, ','); info.m_line = _ttoi(strToken);
-			AfxExtractSubString(strToken, strLine, 6, ','); info.m_order = _ttoi(strToken);
-			AfxExtractSubString(strToken, strLine, 7, ','); info.m_width = _ttoi(strToken);
-			AfxExtractSubString(strToken, strLine, 8, ','); info.m_height = _ttoi(strToken);
+            AfxExtractSubString(strToken, strLine, 1, ','); info.m_type = _ttoi(strToken);
+            AfxExtractSubString(strToken, strLine, 2, ','); info.m_sheet = _ttoi(strToken);
+            AfxExtractSubString(strToken, strLine, 3, ','); info.m_sx = _ttoi(strToken);
+            AfxExtractSubString(strToken, strLine, 4, ','); info.m_sy = _ttoi(strToken);
+            AfxExtractSubString(strToken, strLine, 5, ','); info.m_line = _ttoi(strToken);
+            AfxExtractSubString(strToken, strLine, 6, ','); info.m_order = _ttoi(strToken);
+            AfxExtractSubString(strToken, strLine, 7, ','); info.m_width = _ttoi(strToken);
+            AfxExtractSubString(strToken, strLine, 8, ','); info.m_height = _ttoi(strToken);
 
-			m_Chars.push_back(info); // 배열에 추가
-		}
-		file.Close();
-		return TRUE;
-	}
+            m_Chars.push_back(info);
+        }
+        file.Close();
+        return TRUE;
+    }
 };
 
 // CTermProjectDlg 대화 상자
 class CTermProjectDlg : public CDialogEx
 {
-// 생성입니다.
 public:
-	CTermProjectDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
+    // 생성/기본
+    CTermProjectDlg(CWnd* pParent = nullptr);
 
-
-
-// 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_TERMPROJECT_DIALOG };
+    enum { IDD = IDD_TERMPROJECT_DIALOG };
 #endif
 
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
-
-
-// 구현입니다.
 protected:
-	HICON m_hIcon;
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-	// 생성된 메시지 맵 함수
-	virtual BOOL OnInitDialog();
-	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
-	afx_msg void OnPaint();
-	afx_msg HCURSOR OnQueryDragIcon();
-	DECLARE_MESSAGE_MAP()
-public:
-	afx_msg void OnClickedButtonCone();
+    // MFC 기본 메시지 핸들러
+    virtual BOOL OnInitDialog();
+    afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+    afx_msg void OnPaint();
+    afx_msg HCURSOR OnQueryDragIcon();
+    afx_msg void OnDestroy();
+
+    DECLARE_MESSAGE_MAP()
 
 public:
-	vtkSmartPointer<vtkRenderWindow> m_vtkWindow;
-	vtkSmartPointer<vtkRenderWindowInteractor> m_pInteractor;
-	vtkSmartPointer<vtkRenderWindow> m_vtkRenderWindow;
-    vtkSmartPointer<vtkRenderer>     m_vtkRenderer;
+    // UI 이벤트(버튼/콤보/리스트/스핀 등)
+    afx_msg void OnClickedButtonCone();
+    afx_msg void OnClickedButtonButtonOpen();
+    afx_msg void OnSelchangeEditBookname();
+    afx_msg void OnNMClickListChars(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnNMCustomdrawListChars(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnDeltaposSpinSheet(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnDeltaposSpinType(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+    afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+    afx_msg void OnDeltaposSpinHistory(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnSelchangeListHistory();
+
+    // Static 클릭(필요하면 유지)
+    afx_msg void OnStnClickedStaticFrame();
+    afx_msg void OnStnClickedStaticSheets();
+    afx_msg void OnStnClickedStaticKindCount();
+    afx_msg void OnStnClickedStaticTypeImage();
+    afx_msg void OnStnClickedStaticCharUnicode();
+
+public:
+    // VTK/3D
+    void InitVtkWindow(void* hWnd);
+    void ResizeVtkWindow();
+    void ViewSTL(CString strFilePath);
+
+    vtkSmartPointer<vtkRenderWindow>           m_vtkWindow;
+    vtkSmartPointer<vtkRenderWindowInteractor> m_pInteractor;
+    vtkSmartPointer<vtkRenderWindow>           m_vtkRenderWindow;
+    vtkSmartPointer<vtkRenderer>              m_vtkRenderer;
     vtkSmartPointer<vtkRenderWindowInteractor> m_vtkInteractor;
-	CTypeDB m_TypeDB;
-	CListCtrl m_ListCtrl;
-	CComboBox m_editBookName;
-	CImageList m_ImgList;
-
-	void InitVtkWindow(void* hWnd);
-	void ResizeVtkWindow();
-	void ViewSTL(CString strFilePath);
-	afx_msg void OnNMClickListChars(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnClickedButtonButtonOpen();
 
 protected:
-	CString m_strRootPath;
-	int m_nCurrentSheet;
-	CImage m_imgBookPage;
-	CRect m_rectBookImage;
+    // 데이터/로딩/갱신 로직
+    void LoadBookData(CString strBookName);
+    void LoadSheetImage(int nSheet);
+    void UpdateCharInfo(int nIndex);
 
-	void LoadBookData(CString strBookName);
-	void LoadSheetImage(int nSheet);
+    CTypeDB   m_TypeDB;
+    int       m_nCurrentSheet;
+    int       m_nSelectIndex = -1;
+    CString   m_strRootPath;
+
+    // 이미지(책/선택글자/활자)
+    CImage m_imgBookPage;
+    CImage m_imgTypeChar;
+    CImage m_imgSelectedChar;
+    CRect  m_rectBookImage;
+
 public:
-	int m_nSelectIndex = -1;
-	CImage m_imgTypeChar;
-	CImage m_imgSelectedChar;
+    // 컨트롤 핸들(DDX)
+    CListCtrl  m_ListCtrl;
+    CComboBox  m_editBookName;
+    CImageList m_ImgList;
 
-	void UpdateCharInfo(int nIndex);
-	afx_msg void OnDeltaposSpinType(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnSelchangeEditBookname();
-	afx_msg void OnNMCustomdrawListChars(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnDeltaposSpinSheet(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnStnClickedStaticFrame();
-	afx_msg void OnStnClickedStaticSheets();
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+protected:
+    // 리소스/기타
+    HICON m_hIcon;
+    std::vector<int> m_History;
+    int m_HistoryPos = -1;
+    bool m_bHistoryJump = false;
+    CSpinButtonCtrl m_spinHistory;
+    CListBox m_listHistory;
+
+    void AddToHistory(int idx);
+    void RefreshHistoryList();
+    void SyncHistorySelection();
+    CString MakeHistoryText(int dataIndex) const;
+private:
+    // 폰트 관련
+    CFont m_fontUI;
+    CFont m_fontBold;
+
+    void CreateUiFonts();
+    void ApplyFontsToAllControls();
+    void ApplyFontToChildren(CWnd* pParent, CFont* pFont);
+    void ApplyListHeaderFont(CListCtrl& list, CFont* pFont);
+    void FixControlHeightsAfterFontChange();
 };
+
