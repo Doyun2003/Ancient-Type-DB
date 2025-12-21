@@ -94,6 +94,10 @@ public:
     afx_msg void OnDeltaposSpinHistory(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnSelchangeListHistory();
 
+protected:
+    void LayoutSearchButton();  
+
+
     // Static 클릭(필요하면 유지)
     afx_msg void OnStnClickedStaticFrame();
     afx_msg void OnStnClickedStaticSheets();
@@ -149,6 +153,7 @@ protected:
     void RefreshHistoryList();
     void SyncHistorySelection();
     CString MakeHistoryText(int dataIndex) const;
+
 private:
     // 폰트 관련
     CFont m_fontUI;
@@ -159,5 +164,8 @@ private:
     void ApplyFontToChildren(CWnd* pParent, CFont* pFont);
     void ApplyListHeaderFont(CListCtrl& list, CFont* pFont);
     void FixControlHeightsAfterFontChange();
+public:
+    afx_msg void OnStnClickedStaticMaxIdx();
+    afx_msg void OnStnClickedStaticSheetType();
 };
 
